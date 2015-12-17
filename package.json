@@ -1,0 +1,24 @@
+{
+  "name": "wp-createjs",
+  "version": "0.8.1",
+  "description": "根据项目需要，改版后的createjs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CreateJS/EaselJS.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CreateJS/EaselJS/issues"
+  },
+  "homepage": "https://github.com/CreateJS/EaselJS#readme"
+}

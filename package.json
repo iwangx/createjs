@@ -1,8 +1,8 @@
 {
   "name": "wp-createjs",
   "version": "0.8.1",
-  "description": "根据项目需要，改版后的createjs",
-  "main": "index.js",
+  "description": "",
+  "main": "lib/easeljs-0.8.1.min.js",
   "directories": {
     "doc": "docs",
     "example": "examples",
@@ -13,12 +13,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CreateJS/EaselJS.git"
+    "url": "git+https://github.com/iwangx/createjs.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/CreateJS/EaselJS/issues"
+    "url": "https://github.com/iwangx/createjs/issues"
   },
-  "homepage": "https://github.com/CreateJS/EaselJS#readme"
+  "homepage": "https://github.com/iwangx/createjs#readme"
 }

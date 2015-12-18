@@ -139,6 +139,7 @@
 	 * prototype.
 	 **/
 	EventDispatcher.initialize = function(target) {
+		debugger
 		target.addEventListener = p.addEventListener;
 		target.on = p.on;
 		target.removeEventListener = target.off =  p.removeEventListener;

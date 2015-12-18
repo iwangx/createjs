@@ -752,6 +752,7 @@
 	 * @param {Stage} owner Indicates that the event has already been captured & handled by the indicated stage.
 	 **/
 	p._handlePointerDown = function(id, e, pageX, pageY, owner) {
+		//change by wangx 
 		if (this.preventSelection) { e.preventDefault(); }
 		if (this._primaryPointerID == null || id === -1) { this._primaryPointerID = id; } // mouse always takes over.
 		

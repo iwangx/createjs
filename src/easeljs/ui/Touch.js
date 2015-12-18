@@ -128,9 +128,8 @@
 	Touch._IOS_enable = function(stage) {
 		var canvas = stage.canvas;
 		var f = stage.__touch.f = function(e) { Touch._IOS_handleEvent(stage,e); };
-		//canvas.addEventListener("click", f, false)
-		canvas.addEventListener("touchstart", f, false);
-		canvas.addEventListener("touchmove", f, false);
+	/*	canvas.addEventListener("touchstart", f, false);
+		canvas.addEventListener("touchmove", f, false);*/
 		canvas.addEventListener("touchend", f, false);
 		canvas.addEventListener("touchcancel", f, false);
 	};
@@ -145,8 +144,8 @@
 		var canvas = stage.canvas;
 		if (!canvas) { return; }
 		var f = stage.__touch.f;
-		canvas.removeEventListener("touchstart", f, false);
-		canvas.removeEventListener("touchmove", f, false);
+		/*canvas.removeEventListener("touchstart", f, false);
+		canvas.removeEventListener("touchmove", f, false);*/
 		canvas.removeEventListener("touchend", f, false);
 		canvas.removeEventListener("touchcancel", f, false);
 	};
@@ -160,107 +159,26 @@
 	 **/
 	Touch._IOS_handleEvent = function(stage, e) {
 		if (!stage) { return; }
-		if (stage.__touch.preventDefault) { e.preventDefault&&e.preventDefault(); }
+		//if (stage.__touch.preventDefault) { e.preventDefault&&e.preventDefault(); }
 		var touches = e.changedTouches;
 		var type = e.type;
+
 		for (var i= 0,l=touches.length; i<l; i++) {
 			var touch = touches[i];
 			var id = touch.identifier;
-			if (touch.target != stage.canvas) { continue; }
-
+			/*if (touch.target != stage.canvas) { continue; }
 			if (type == "touchstart") {
 				this._handleStart(stage, id, e, touch.pageX, touch.pageY);
 			} else if (type == "touchmove") {
 				this._handleMove(stage, id, e, touch.pageX, touch.pageY);
 			} else if (type == "touchend" || type == "touchcancel") {
-				this._handleEnd(stage, id, e);
-			}else if(type=="click"){
-				this._handleEnd(stage, id, e);
-			}
+				this._handleEnd(stage, id, e, touch.pageX, touch.pageY);
+			}*/
+			this._handleEnd(stage, id, e, touch.pageX, touch.pageY);
 		}
 	};
 
-	/**
-	 * @method _IE_enable
-	 * @protected
-	 * @param {Stage} stage
-	 * @static
-	 **/
-	Touch._IE_enable = function(stage) {
-		var canvas = stage.canvas;
-		var f = stage.__touch.f = function(e) { Touch._IE_handleEvent(stage,e); };
 
-		if (window.navigator["pointerEnabled"] === undefined) {
-			canvas.addEventListener("MSPointerDown", f, false);
-			window.addEventListener("MSPointerMove", f, false);
-			window.addEventListener("MSPointerUp", f, false);
-			window.addEventListener("MSPointerCancel", f, false);
-			if (stage.__touch.preventDefault) { canvas.style.msTouchAction = "none"; }
-		} else {
-			canvas.addEventListener("pointerdown", f, false);
-			window.addEventListener("pointermove", f, false);
-			window.addEventListener("pointerup", f, false);
-			window.addEventListener("pointercancel", f, false);
-			if (stage.__touch.preventDefault) { canvas.style.touchAction = "none"; }
-
-		}
-		stage.__touch.activeIDs = {};
-	};
-
-	/**
-	 * @method _IE_disable
-	 * @protected
-	 * @param {Stage} stage
-	 * @static
-	 **/
-	Touch._IE_disable = function(stage) {
-		var f = stage.__touch.f;
-
-		if (window.navigator["pointerEnabled"] === undefined) {
-			window.removeEventListener("MSPointerMove", f, false);
-			window.removeEventListener("MSPointerUp", f, false);
-			window.removeEventListener("MSPointerCancel", f, false);
-			if (stage.canvas) {
-				stage.canvas.removeEventListener("MSPointerDown", f, false);
-			}
-		} else {
-			window.removeEventListener("pointermove", f, false);
-			window.removeEventListener("pointerup", f, false);
-			window.removeEventListener("pointercancel", f, false);
-			if (stage.canvas) {
-				stage.canvas.removeEventListener("pointerdown", f, false);
-			}
-		}
-	};
-
-	/**
-	 * @method _IE_handleEvent
-	 * @param {Stage} stage
-	 * @param {Object} e The event to handle.
-	 * @protected
-	 * @static
-	 **/
-	Touch._IE_handleEvent = function(stage, e) {
-		if (!stage) { return; }
-		if (stage.__touch.preventDefault) { e.preventDefault && e.preventDefault(); }
-		var type = e.type;
-		var id = e.pointerId;
-		var ids = stage.__touch.activeIDs;
-
-		if (type == "MSPointerDown" || type == "pointerdown") {
-			if (e.srcElement != stage.canvas) { return; }
-			ids[id] = true;
-			this._handleStart(stage, id, e, e.pageX, e.pageY);
-		} else if (ids[id]) { // it's an id we're watching
-			if (type == "MSPointerMove" || type == "pointermove") {
-				this._handleMove(stage, id, e, e.pageX, e.pageY);
-			} else if (type == "MSPointerUp" || type == "MSPointerCancel"
-					|| type == "pointerup" || type == "pointercancel") {
-				delete(ids[id]);
-				this._handleEnd(stage, id, e);
-			}
-		}
-	};
 
 	/**
 	 * @method _handleStart
@@ -272,13 +190,14 @@
 	 * @protected
 	 **/
 	Touch._handleStart = function(stage, id, e, x, y) {
-		var props = stage.__touch;
+		/*var props = stage.__touch;
 		if (!props.multitouch && props.count) { return; }
 		var ids = props.pointers;
 		if (ids[id]) { return; }
 		ids[id] = true;
-		props.count++;
-		stage._handlePointerDown(id, e, x, y);
+		props.count++;*/
+		//stage._handlePointerDown(id, e, x, y);
+		stage._handlePointerDown(-1, e,x,y);
 	};
 
 	/**
@@ -291,8 +210,10 @@
 	 * @protected
 	 **/
 	Touch._handleMove = function(stage, id, e, x, y) {
-		if (!stage.__touch.pointers[id]) { return; }
-		stage._handlePointerMove(id, e, x, y);
+		/*if (!stage.__touch.pointers[id]) { return; }
+		stage._handlePointerMove(id, e, x, y);*/
+		if(!e){ e = window.event; }
+		//stage._handlePointerMove(-1, e, x, y);
 	};
 
 	/**
@@ -302,14 +223,25 @@
 	 * @param {Object} e
 	 * @protected
 	 **/
-	Touch._handleEnd = function(stage, id, e) {
+	Touch._handleEnd = function(stage, id, e,x,y) {
 		// TODO: cancel should be handled differently for proper UI (ex. an up would trigger a click, a cancel would more closely resemble an out).
-		var props = stage.__touch;
+		/*var props = stage.__touch;
 		var ids = props.pointers;
 		if (!ids[id]) { return; }
-		props.count--;
-		stage._handlePointerUp(id, e, true);
-		delete(ids[id]);
+		props.count--;*/
+		//stage._handlePointerUp(id, e, true);
+		// delete(ids[id]);
+		//stage._handlePointerUp(-1, e, false);
+
+		var _this=stage;
+		if (_this._primaryPointerID == null || id === -1) { _this._primaryPointerID = id; } // mouse always takes over.
+		if (y != null) { _this._updatePointerPosition(id, e, x, y); }
+		var target = null, o = _this._getPointerData(id);
+		target = o.target = _this._getObjectsUnderPoint(o.x, o.y, null, true); 
+		if (target) { _this._dispatchMouseEvent(target, "click", true, id, o, e); }
+		_this=null;
+		target=null;
+		o=null;
 	};
 
 

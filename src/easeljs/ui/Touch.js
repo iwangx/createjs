@@ -70,10 +70,11 @@
 	 * @static
 	 **/
 	Touch.isSupported = function() {
-		return	!!(('ontouchstart' in window) // iOS & Android
-			|| (window.navigator['msPointerEnabled'] && window.navigator['msMaxTouchPoints'] > 0) // IE10
-			|| (window.navigator['pointerEnabled'] && window.navigator['maxTouchPoints'] > 0)); // IE11+
+		return	!!('ontouchstart' in window); // iOS & Android; // IE11+
 	};
+
+
+	Touch.isMove=false;
 
 	/**
 	 * Enables touch interaction for the specified EaselJS {{#crossLink "Stage"}}{{/crossLink}}. Currently supports iOS
@@ -99,7 +100,6 @@
 		// note that in the future we may need to disable the standard mouse event model before adding
 		// these to prevent duplicate calls. It doesn't seem to be an issue with iOS devices though.
 		if ('ontouchstart' in window) { Touch._IOS_enable(stage); }
-		else if (window.navigator['msPointerEnabled'] || window.navigator["pointerEnabled"]) { Touch._IE_enable(stage); }
 		return true;
 	};
 
@@ -112,8 +112,7 @@
 	Touch.disable = function(stage) {
 		if (!stage) { return; }
 		if ('ontouchstart' in window) { Touch._IOS_disable(stage); }
-		else if (window.navigator['msPointerEnabled'] || window.navigator["pointerEnabled"]) { Touch._IE_disable(stage); }
-		
+	
 		delete stage.__touch;
 	};
 
@@ -128,8 +127,8 @@
 	Touch._IOS_enable = function(stage) {
 		var canvas = stage.canvas;
 		var f = stage.__touch.f = function(e) { Touch._IOS_handleEvent(stage,e); };
-	/*	canvas.addEventListener("touchstart", f, false);
-		canvas.addEventListener("touchmove", f, false);*/
+		canvas.addEventListener("touchstart", f, false);
+		canvas.addEventListener("touchmove", f, false);
 		canvas.addEventListener("touchend", f, false);
 		canvas.addEventListener("touchcancel", f, false);
 	};
@@ -144,8 +143,8 @@
 		var canvas = stage.canvas;
 		if (!canvas) { return; }
 		var f = stage.__touch.f;
-		/*canvas.removeEventListener("touchstart", f, false);
-		canvas.removeEventListener("touchmove", f, false);*/
+		canvas.removeEventListener("touchstart", f, false);
+		canvas.removeEventListener("touchmove", f, false);
 		canvas.removeEventListener("touchend", f, false);
 		canvas.removeEventListener("touchcancel", f, false);
 	};
@@ -166,15 +165,14 @@
 		for (var i= 0,l=touches.length; i<l; i++) {
 			var touch = touches[i];
 			var id = touch.identifier;
-			/*if (touch.target != stage.canvas) { continue; }
+			if (touch.target != stage.canvas) { continue; }
 			if (type == "touchstart") {
 				this._handleStart(stage, id, e, touch.pageX, touch.pageY);
 			} else if (type == "touchmove") {
 				this._handleMove(stage, id, e, touch.pageX, touch.pageY);
 			} else if (type == "touchend" || type == "touchcancel") {
 				this._handleEnd(stage, id, e, touch.pageX, touch.pageY);
-			}*/
-			this._handleEnd(stage, id, e, touch.pageX, touch.pageY);
+			}
 		}
 	};
 
@@ -190,14 +188,7 @@
 	 * @protected
 	 **/
 	Touch._handleStart = function(stage, id, e, x, y) {
-		/*var props = stage.__touch;
-		if (!props.multitouch && props.count) { return; }
-		var ids = props.pointers;
-		if (ids[id]) { return; }
-		ids[id] = true;
-		props.count++;*/
-		//stage._handlePointerDown(id, e, x, y);
-		stage._handlePointerDown(-1, e,x,y);
+		this.isMove=false;
 	};
 
 	/**
@@ -210,10 +201,7 @@
 	 * @protected
 	 **/
 	Touch._handleMove = function(stage, id, e, x, y) {
-		/*if (!stage.__touch.pointers[id]) { return; }
-		stage._handlePointerMove(id, e, x, y);*/
-		if(!e){ e = window.event; }
-		//stage._handlePointerMove(-1, e, x, y);
+		this.isMove=true;
 	};
 
 	/**
@@ -224,24 +212,17 @@
 	 * @protected
 	 **/
 	Touch._handleEnd = function(stage, id, e,x,y) {
-		// TODO: cancel should be handled differently for proper UI (ex. an up would trigger a click, a cancel would more closely resemble an out).
-		/*var props = stage.__touch;
-		var ids = props.pointers;
-		if (!ids[id]) { return; }
-		props.count--;*/
-		//stage._handlePointerUp(id, e, true);
-		// delete(ids[id]);
-		//stage._handlePointerUp(-1, e, false);
-
-		var _this=stage;
-		if (_this._primaryPointerID == null || id === -1) { _this._primaryPointerID = id; } // mouse always takes over.
-		if (y != null) { _this._updatePointerPosition(id, e, x, y); }
-		var target = null, o = _this._getPointerData(id);
-		target = o.target = _this._getObjectsUnderPoint(o.x, o.y, null, true); 
-		if (target) { _this._dispatchMouseEvent(target, "click", true, id, o, e); }
-		_this=null;
-		target=null;
-		o=null;
+		if(!this.isMove){
+			var _this=stage;
+			if (_this._primaryPointerID == null || id === -1) { _this._primaryPointerID = id; } // mouse always takes over.
+			if (y != null) { _this._updatePointerPosition(id, e, x, y); }
+			var target = null, o = _this._getPointerData(id);
+			target = o.target = _this._getObjectsUnderPoint(o.x, o.y, null, true); 
+			if (target) { _this._dispatchMouseEvent(target, "click", true, id, o, e); }
+			_this=null;
+			target=null;
+			o=null;
+		}
 	};
 
 

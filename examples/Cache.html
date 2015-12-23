@@ -8,7 +8,7 @@
 	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
 	<script src="../_assets/js/examples.js"></script>
 
-	<script src="../lib/easeljs-NEXT.combined.js"></script>
+	<script src="../lib/easeljs-0.8.1.min.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
@@ -18,7 +18,7 @@
 	var shape;
 	var radius = 50;
 	var rings = 40;
-
+	var update=true;
 	function init() {
 		// create a new stage and point it at our canvas:
 		canvas = document.getElementById("testCanvas");
@@ -35,43 +35,61 @@
 			}
 			shape.x = Math.random() * canvas.width;
 			shape.y = Math.random() * canvas.height;
-			shape.velX = Math.random() * 10 - 5;
-			shape.velY = Math.random() * 10 - 5;
+			//shape.velX = Math.random() * 10 - 5;
+			//shape.velY = Math.random() * 10 - 5;
 
 			// turn snapToPixel on for all shapes - it's set to false by default on Shape.
 			// it won't do anything until stage.snapToPixelEnabled is set to true.
-			shape.snapToPixel = true;
+			//shape.snapToPixel = true;
+				shape.on("click",function(){
+					this.x=this.x;
+					this.y=this.y;
+					this.graphics.beginFill("#fad779").drawCircle(0,0,50);
+					this.updateCache();
+					stage.update(this);
+
+				});
 
 			stage.addChild(shape);
 		}
 
 		// add a text object to output the current FPS:
-		fpsLabel = new createjs.Text("-- fps", "bold 18px Arial", "#FFF");
+		/*fpsLabel = new createjs.Text("-- fps", "bold 18px Arial", "#FFF");
 		stage.addChild(fpsLabel);
 		fpsLabel.x = 10;
 		fpsLabel.y = 20;
-
+*/
 		// start the tick and point it at the window so we can do some work before updating the stage:
-		createjs.Ticker.timingMode = createjs.Ticker.RAF;
-		createjs.Ticker.addEventListener("tick", tick);
+		//createjs.Ticker.timingMode = createjs.Ticker.RAF;
+		
+		//createjs.Ticker.addEventListener("tick", tick);
+
+		stage.update();
+		toggleCache(true);
 	}
 
 	function tick(event) {
-		var w = canvas.width + radius * 2;
-		var h = canvas.height + radius * 2;
-		var l = stage.getNumChildren() - 1;
+		if(update){
+			update=false
+			var w = canvas.width + radius * 2;
+			var h = canvas.height + radius * 2;
+			var l = stage.getNumChildren() - 1;
 
-		// iterate through all the children and move them according to their velocity:
-		for (var i = 1; i < l; i++) {
-			var shape = stage.getChildAt(i);
-			shape.x = (shape.x + radius + shape.velX + w) % w - radius;
-			shape.y = (shape.y + radius + shape.velY + h) % h - radius;
+			// iterate through all the children and move them according to their velocity:
+			for (var i = 1; i < l; i++) {
+				var shape = stage.getChildAt(i);
+				shape.x = (shape.x + radius + shape.velX + w) % w - radius;
+				shape.y = (shape.y + radius + shape.velY + h) % h - radius;
+
+
+			}
+
+			fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
+
+			// draw the updates to stage:
+			stage.update(event);
+
 		}
-
-		fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
-
-		// draw the updates to stage:
-		stage.update(event);
 	}
 
 	function toggleCache(value) {
@@ -82,6 +100,7 @@
 			var shape = stage.getChildAt(i);
 			if (value) {
 				shape.cache(-radius, -radius, radius * 2, radius * 2);
+				//shape.cache(shape.x, shape.y, radius, radius);
 			} else {
 				shape.uncache();
 			}
